@@ -164,3 +164,9 @@ variable "replication_group_id" {
   description = "Replication group ID with the following constraints: \nA name must contain from 1 to 20 alphanumeric characters or hyphens. \n The first character must be a letter. \n A name cannot end with a hyphen or contain two consecutive hyphens."
   default     = ""
 }
+
+variable "host_name" {
+  type        = "string"
+  description = "The hostname to create in the DNS zone."
+  default     = ""
+}
