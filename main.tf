@@ -136,6 +136,6 @@ module "dns" {
   stage     = var.stage
   ttl       = 60
   zone_id   = var.zone_id
-  records   = [aws_elasticache_replication_group.default.*.primary_endpoint_address]
+  records   = aws_elasticache_replication_group.default.*.primary_endpoint_address
 }
 
