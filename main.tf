@@ -35,6 +35,17 @@ resource "aws_security_group" "default" {
   tags = module.label.tags
 }
 
+resource "aws_security_group_rule" "ingress_cidr_blocks" {
+  count             = var.enabled == "true" && length(var.allowed_cidr_blocks) > 0 ? 1 : 0
+  description       = "Allow inbound traffic from CIDR blocks"
+  type              = "ingress"
+  from_port         = 0
+  to_port           = 65535
+  protocol          = "tcp"
+  cidr_blocks       = var.allowed_cidr_blocks
+  security_group_id = join("", aws_security_group.default.*.id)
+}
+
 locals {
   elasticache_subnet_group_name = var.elasticache_subnet_group_name != "" ? var.elasticache_subnet_group_name : join("", aws_elasticache_subnet_group.default.*.name)
 }

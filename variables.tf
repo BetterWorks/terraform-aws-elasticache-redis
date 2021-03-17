@@ -170,4 +170,8 @@ variable "host_name" {
   description = "The hostname to create in the DNS zone."
   default     = ""
 }
-
+variable "allowed_cidr_blocks" {
+  type        = list(string)
+  default     = []
+  description = "List of CIDR blocks to be allowed to connect to the cluster"
+}
