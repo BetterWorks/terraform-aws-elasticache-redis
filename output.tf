@@ -14,13 +14,13 @@ output "port" {
 }
 
 output "host" {
-  value = coalesce(
+  value = var.enabled == "true" ? coalesce(
     module.dns.hostname,
     join(
       "",
       aws_elasticache_replication_group.default.*.primary_endpoint_address,
     ),
-  )
+  ) : ""
   description = "Redis host"
 }
 
