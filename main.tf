@@ -24,6 +24,12 @@ resource "aws_security_group" "default" {
     protocol        = "tcp"
     security_groups = var.security_groups
   }
+  ingress {
+    from_port   = var.port # Redis
+    to_port     = var.port
+    protocol    = "tcp"
+    cidr_blocks = var.allowed_cidr_blocks
+  }
 
   egress {
     from_port   = 0
@@ -33,17 +39,6 @@ resource "aws_security_group" "default" {
   }
 
   tags = module.label.tags
-}
-
-resource "aws_security_group_rule" "ingress_cidr_blocks" {
-  count             = var.enabled == "true" && length(var.allowed_cidr_blocks) > 0 ? 1 : 0
-  description       = "Allow inbound traffic from CIDR blocks"
-  type              = "ingress"
-  from_port         = 0
-  to_port           = 65535
-  protocol          = "tcp"
-  cidr_blocks       = var.allowed_cidr_blocks
-  security_group_id = join("", aws_security_group.default.*.id)
 }
 
 locals {
