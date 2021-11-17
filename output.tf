@@ -24,3 +24,7 @@ output "host" {
   description = "Redis host"
 }
 
+output "reader_host" {
+  value = var.enabled == "true" ? join("", aws_elasticache_replication_group.default.*.reader_endpoint_address) : ""
+  description = "read replica redis host"
+}
