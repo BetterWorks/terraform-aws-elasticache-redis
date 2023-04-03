@@ -135,7 +135,7 @@ resource "aws_cloudwatch_metric_alarm" "cache_memory" {
 }
 
 module "dns" {
-  source    = "git::https://github.com/betterworks/terraform-aws-route53-cluster-hostname.git?ref=tags/0.3.0"
+  source    = "git::https://github.com/betterworks/terraform-aws-route53-cluster-hostname.git?ref=tags/0.8.0"
   enabled   = var.enabled == "true" && length(var.zone_id) > 0 ? "true" : "false"
   namespace = var.namespace
   name      = length(var.host_name) > 0 ? var.host_name : module.label.id
