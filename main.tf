@@ -67,22 +67,22 @@ resource "aws_elasticache_parameter_group" "default" {
 resource "aws_elasticache_replication_group" "default" {
   count = var.enabled == "true" ? 1 : 0
 
-  auth_token                    = var.auth_token
-  replication_group_id          = var.replication_group_id == "" ? module.label.id : var.replication_group_id
-  description                   = module.label.id
-  node_type                     = var.instance_type
-  num_cache_clusters            = var.cluster_size
-  port                          = var.port
-  parameter_group_name          = aws_elasticache_parameter_group.default[0].name
-  preferred_cache_cluster_azs   = slice(var.availability_zones, 0, var.cluster_size)
-  automatic_failover_enabled    = var.automatic_failover
-  subnet_group_name             = local.elasticache_subnet_group_name
-  security_group_ids            = [aws_security_group.default[0].id]
-  maintenance_window            = var.maintenance_window
-  notification_topic_arn        = var.notification_topic_arn
-  engine_version                = var.engine_version
-  at_rest_encryption_enabled    = var.at_rest_encryption_enabled
-  transit_encryption_enabled    = var.transit_encryption_enabled
+  auth_token                  = var.auth_token
+  replication_group_id        = var.replication_group_id == "" ? module.label.id : var.replication_group_id
+  description                 = module.label.id
+  node_type                   = var.instance_type
+  num_cache_clusters          = var.cluster_size
+  port                        = var.port
+  parameter_group_name        = aws_elasticache_parameter_group.default[0].name
+  preferred_cache_cluster_azs = slice(var.availability_zones, 0, var.cluster_size)
+  automatic_failover_enabled  = var.automatic_failover
+  subnet_group_name           = local.elasticache_subnet_group_name
+  security_group_ids          = [aws_security_group.default[0].id]
+  maintenance_window          = var.maintenance_window
+  notification_topic_arn      = var.notification_topic_arn
+  engine_version              = var.engine_version
+  at_rest_encryption_enabled  = var.at_rest_encryption_enabled
+  transit_encryption_enabled  = var.transit_encryption_enabled
 
   tags = module.label.tags
 }
@@ -104,12 +104,11 @@ resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
   threshold = var.alarm_cpu_threshold_percent
 
   dimensions = {
-    CacheClusterId = module.label.id
+    CacheClusterId = aws_elasticache_replication_group.default.member_clusters
   }
 
   alarm_actions = var.alarm_actions
   ok_actions    = var.ok_actions
-  depends_on    = [aws_elasticache_replication_group.default]
 }
 
 resource "aws_cloudwatch_metric_alarm" "cache_memory" {
@@ -126,12 +125,11 @@ resource "aws_cloudwatch_metric_alarm" "cache_memory" {
   threshold = var.alarm_memory_threshold_bytes
 
   dimensions = {
-    CacheClusterId = module.label.id
+    CacheClusterId = aws_elasticache_replication_group.default.member_clusters
   }
 
   alarm_actions = var.alarm_actions
   ok_actions    = var.ok_actions
-  depends_on    = [aws_elasticache_replication_group.default]
 }
 
 module "dns" {
