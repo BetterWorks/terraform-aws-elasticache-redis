@@ -98,10 +98,10 @@ resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
   alarm_name          = "${module.label.id}-cpu-utilization"
   alarm_description   = "Redis cluster CPU utilization"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = "1"
+  evaluation_periods  = "5"
   metric_name         = "CPUUtilization"
   namespace           = "AWS/ElastiCache"
-  period              = "300"
+  period              = "60"
   statistic           = "Average"
 
   threshold = var.alarm_cpu_threshold_percent
@@ -118,14 +118,14 @@ resource "aws_cloudwatch_metric_alarm" "cache_memory" {
   count               = var.enabled == "true" ? 1 : 0
   alarm_name          = "${module.label.id}-freeable-memory"
   alarm_description   = "Redis cluster freeable memory"
-  comparison_operator = "LessThanThreshold"
-  evaluation_periods  = "1"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "5"
   metric_name         = "FreeableMemory"
   namespace           = "AWS/ElastiCache"
   period              = "60"
   statistic           = "Average"
 
-  threshold = var.alarm_memory_threshold_bytes
+  threshold = var.alarm_memory_threshold_percent
 
   dimensions = {
     CacheClusterId = tolist(aws_elasticache_replication_group.default[0].member_clusters)[0]
