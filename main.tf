@@ -91,7 +91,7 @@ resource "aws_elasticache_replication_group" "default" {
 # CloudWatch Resources
 #
 resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
-  count               = var.enabled == "true" ? 1 : 0
+  for_each            = var.enabled == "true" ? aws_elasticache_replication_group.default[0].member_clusters : {}
   alarm_name          = "${module.label.id}-cpu-utilization"
   alarm_description   = "Redis cluster CPU utilization"
   comparison_operator = "GreaterThanThreshold"
@@ -104,7 +104,7 @@ resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
   threshold = var.alarm_cpu_threshold_percent
 
   dimensions = {
-    CacheClusterId = aws_elasticache_replication_group.default[0].member_clusters[0]
+    CacheClusterId = each.key
   }
 
   alarm_actions = var.alarm_actions
@@ -112,7 +112,7 @@ resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "cache_memory" {
-  count               = var.enabled == "true" ? 1 : 0
+  for_each            = var.enabled == "true" ? aws_elasticache_replication_group.default[0].member_clusters : {}
   alarm_name          = "${module.label.id}-freeable-memory"
   alarm_description   = "Redis cluster freeable memory"
   comparison_operator = "LessThanThreshold"
@@ -125,7 +125,7 @@ resource "aws_cloudwatch_metric_alarm" "cache_memory" {
   threshold = var.alarm_memory_threshold_bytes
 
   dimensions = {
-    CacheClusterId = aws_elasticache_replication_group.default[0].member_clusters[0]
+    CacheClusterId = each.key
   }
 
   alarm_actions = var.alarm_actions
