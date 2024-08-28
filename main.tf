@@ -67,24 +67,27 @@ resource "aws_elasticache_parameter_group" "default" {
 resource "aws_elasticache_replication_group" "default" {
   count = var.enabled == "true" ? 1 : 0
 
-  auth_token                    = var.auth_token
-  replication_group_id          = var.replication_group_id == "" ? module.label.id : var.replication_group_id
-  description                   = module.label.id
-  node_type                     = var.instance_type
-  num_cache_clusters            = var.cluster_size
-  port                          = var.port
-  parameter_group_name          = aws_elasticache_parameter_group.default[0].name
-  preferred_cache_cluster_azs   = slice(var.availability_zones, 0, var.cluster_size)
-  automatic_failover_enabled    = var.automatic_failover
-  subnet_group_name             = local.elasticache_subnet_group_name
-  security_group_ids            = [aws_security_group.default[0].id]
-  maintenance_window            = var.maintenance_window
-  notification_topic_arn        = var.notification_topic_arn
-  engine_version                = var.engine_version
-  at_rest_encryption_enabled    = var.at_rest_encryption_enabled
-  transit_encryption_enabled    = var.transit_encryption_enabled
+  auth_token                  = var.auth_token
+  replication_group_id        = var.replication_group_id == "" ? module.label.id : var.replication_group_id
+  description                 = module.label.id
+  node_type                   = var.instance_type
+  num_cache_clusters          = var.cluster_size
+  port                        = var.port
+  parameter_group_name        = aws_elasticache_parameter_group.default[0].name
+  preferred_cache_cluster_azs = slice(var.availability_zones, 0, var.cluster_size)
+  automatic_failover_enabled  = var.automatic_failover
+  subnet_group_name           = local.elasticache_subnet_group_name
+  security_group_ids          = [aws_security_group.default[0].id]
+  maintenance_window          = var.maintenance_window
+  notification_topic_arn      = var.notification_topic_arn
+  engine_version              = var.engine_version
+  at_rest_encryption_enabled  = var.at_rest_encryption_enabled
+  transit_encryption_enabled  = var.transit_encryption_enabled
 
   tags = module.label.tags
+  lifecycle {
+    ignore_changes = [preferred_cache_cluster_azs, availability_zones]
+  }
 }
 
 #
@@ -95,43 +98,41 @@ resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
   alarm_name          = "${module.label.id}-cpu-utilization"
   alarm_description   = "Redis cluster CPU utilization"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = "1"
+  evaluation_periods  = "5"
   metric_name         = "CPUUtilization"
   namespace           = "AWS/ElastiCache"
-  period              = "300"
+  period              = "60"
   statistic           = "Average"
 
   threshold = var.alarm_cpu_threshold_percent
 
   dimensions = {
-    CacheClusterId = module.label.id
+    CacheClusterId = tolist(aws_elasticache_replication_group.default[0].member_clusters)[0]
   }
 
   alarm_actions = var.alarm_actions
   ok_actions    = var.ok_actions
-  depends_on    = [aws_elasticache_replication_group.default]
 }
 
 resource "aws_cloudwatch_metric_alarm" "cache_memory" {
   count               = var.enabled == "true" ? 1 : 0
   alarm_name          = "${module.label.id}-freeable-memory"
   alarm_description   = "Redis cluster freeable memory"
-  comparison_operator = "LessThanThreshold"
-  evaluation_periods  = "1"
-  metric_name         = "FreeableMemory"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "5"
+  metric_name         = "DatabaseCapacityUsagePercentage"
   namespace           = "AWS/ElastiCache"
   period              = "60"
   statistic           = "Average"
 
-  threshold = var.alarm_memory_threshold_bytes
+  threshold = var.alarm_memory_threshold_percent
 
   dimensions = {
-    CacheClusterId = module.label.id
+    CacheClusterId = tolist(aws_elasticache_replication_group.default[0].member_clusters)[0]
   }
 
   alarm_actions = var.alarm_actions
   ok_actions    = var.ok_actions
-  depends_on    = [aws_elasticache_replication_group.default]
 }
 
 module "dns" {

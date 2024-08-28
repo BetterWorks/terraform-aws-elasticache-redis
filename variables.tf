@@ -66,7 +66,7 @@ variable "family" {
 }
 
 variable "parameter" {
-#  type        = list(string)
+  #  type        = list(string)
   default     = []
   description = "A list of Redis parameters to apply. Note that parameters may differ from one Redis family to another"
 }
@@ -92,13 +92,13 @@ variable "notification_topic_arn" {
 }
 
 variable "alarm_cpu_threshold_percent" {
-  default     = "75"
+  default     = "85"
   description = "CPU threshold alarm level"
 }
 
-variable "alarm_memory_threshold_bytes" {
+variable "alarm_memory_threshold_percent" {
   # 10MB
-  default     = "10000000"
+  default     = "85"
   description = "Ram threshold alarm level"
 }
 
