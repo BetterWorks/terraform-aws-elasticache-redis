@@ -85,6 +85,9 @@ resource "aws_elasticache_replication_group" "default" {
   transit_encryption_enabled  = var.transit_encryption_enabled
 
   tags = module.label.tags
+  lifecycle {
+    ignore_changes = [preferred_cache_cluster_azs, availability_zones]
+  }
 }
 
 #
