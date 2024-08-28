@@ -120,7 +120,7 @@ resource "aws_cloudwatch_metric_alarm" "cache_memory" {
   alarm_description   = "Redis cluster freeable memory"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "5"
-  metric_name         = "FreeableMemory"
+  metric_name         = "DatabaseCapacityUsagePercentage"
   namespace           = "AWS/ElastiCache"
   period              = "60"
   statistic           = "Average"
