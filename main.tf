@@ -53,7 +53,7 @@ resource "aws_elasticache_subnet_group" "default" {
 
 resource "aws_elasticache_parameter_group" "default" {
   count  = var.enabled == "true" ? 1 : 0
-  name   = trimspace(replace("${var.namespace}-${var.stage}-${var.name}${var.engine_version}", "--", "-")) # Removes consecutive hyphens and trims spaces
+  name   = "${var.namespace}-${var.stage}-${var.name}${var.engine_version}"
   family = var.family
   dynamic "parameter" {
     for_each = var.parameter
