@@ -53,7 +53,7 @@ resource "aws_elasticache_subnet_group" "default" {
 
 resource "aws_elasticache_parameter_group" "default" {
   count  = var.enabled == "true" ? 1 : 0
-  name   = module.label.id
+  name   = "${var.namespace}-${var.stage}-${var.name}-${var.family}-${var.engine_version}"
   family = var.family
   dynamic "parameter" {
     for_each = var.parameter
