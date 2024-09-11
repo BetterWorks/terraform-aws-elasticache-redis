@@ -63,10 +63,10 @@ resource "aws_elasticache_parameter_group" "default" {
     }
   }
 
-  # Add lifecycle block to prevent recreation during minor changes
-  lifecycle {
-    prevent_destroy = true
-  }
+  # Temporarily remove this block
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 
