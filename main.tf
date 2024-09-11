@@ -62,7 +62,13 @@ resource "aws_elasticache_parameter_group" "default" {
       value = parameter.value.value
     }
   }
+
+  # Add lifecycle block to prevent recreation during minor changes
+  lifecycle {
+    prevent_destroy = true
+  }
 }
+
 
 resource "aws_elasticache_replication_group" "default" {
   count = var.enabled == "true" ? 1 : 0
@@ -85,10 +91,15 @@ resource "aws_elasticache_replication_group" "default" {
   transit_encryption_enabled  = var.transit_encryption_enabled
 
   tags = module.label.tags
+
+  # Ensure the replication group depends on the parameter group being created
+  depends_on = [aws_elasticache_parameter_group.default]
+
   lifecycle {
     ignore_changes = [preferred_cache_cluster_azs, availability_zones]
   }
 }
+
 
 #
 # CloudWatch Resources
