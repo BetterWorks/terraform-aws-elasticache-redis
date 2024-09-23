@@ -53,7 +53,7 @@ resource "aws_elasticache_subnet_group" "default" {
 
 resource "aws_elasticache_parameter_group" "default" {
   count  = var.enabled == "true" ? 1 : 0
-  name   = module.label.id
+  name   = trimspace(replace("${var.namespace}-${var.stage}-${var.name}-${replace(var.engine_version, ".", "-")}", "--", "-"))
   family = var.family
   dynamic "parameter" {
     for_each = var.parameter
@@ -62,7 +62,13 @@ resource "aws_elasticache_parameter_group" "default" {
       value = parameter.value.value
     }
   }
+
+  # Temporarily remove this block
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
+
 
 resource "aws_elasticache_replication_group" "default" {
   count = var.enabled == "true" ? 1 : 0
@@ -85,10 +91,15 @@ resource "aws_elasticache_replication_group" "default" {
   transit_encryption_enabled  = var.transit_encryption_enabled
 
   tags = module.label.tags
+
+  # Ensure the replication group depends on the parameter group being created
+  depends_on = [aws_elasticache_parameter_group.default]
+
   lifecycle {
     ignore_changes = [preferred_cache_cluster_azs, availability_zones]
   }
 }
+
 
 #
 # CloudWatch Resources
