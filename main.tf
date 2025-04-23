@@ -63,10 +63,9 @@ resource "aws_elasticache_parameter_group" "default" {
     }
   }
 
-  # Temporarily remove this block
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 
