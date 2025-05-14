@@ -95,7 +95,7 @@ resource "aws_elasticache_replication_group" "default" {
   depends_on = [aws_elasticache_parameter_group.default]
 
   lifecycle {
-    ignore_changes = [preferred_cache_cluster_azs, availability_zones]
+    ignore_changes = [preferred_cache_cluster_azs]
   }
 }
 
