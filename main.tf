@@ -1,6 +1,6 @@
 # Define composite variables for resources
 module "label" {
-  source     = "git::https://github.com/betterworks/terraform-null-label.git?ref=tags/0.13.0"
+  source     = "git::https://github.com/betterworks/terraform-null-label.git?ref=tags/0.14.0"
   enabled    = var.enabled
   namespace  = var.namespace
   name       = var.name
@@ -104,7 +104,7 @@ resource "aws_elasticache_replication_group" "default" {
 # CloudWatch Resources
 #
 resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
-  count               = var.enabled == "true" ? 1 : 0
+  count               = var.enabled && var.enable_metric_alarms ? 1 : 0
   alarm_name          = "${module.label.id}-cpu-utilization"
   alarm_description   = "Redis cluster CPU utilization"
   comparison_operator = "GreaterThanThreshold"
@@ -125,7 +125,7 @@ resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "cache_memory" {
-  count               = var.enabled == "true" ? 1 : 0
+  count               = var.enabled && var.enable_metric_alarms ? 1 : 0
   alarm_name          = "${module.label.id}-freeable-memory"
   alarm_description   = "Redis cluster freeable memory"
   comparison_operator = "GreaterThanThreshold"

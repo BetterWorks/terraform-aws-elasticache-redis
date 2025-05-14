@@ -91,6 +91,11 @@ variable "notification_topic_arn" {
   description = "Notification topic arn"
 }
 
+variable "enable_metric_alarms" {
+  default     = false
+  description = "If true will create metric alarms"
+}
+
 variable "alarm_cpu_threshold_percent" {
   default     = "85"
   description = "CPU threshold alarm level"
