@@ -34,6 +34,12 @@ variable "subnets" {
   default     = []
 }
 
+variable multi_az_enabled {
+  type        = bool
+  description = "Enables multi-az cluster"
+  default     = false
+}
+
 variable "elasticache_subnet_group_name" {
   type        = string
   description = "Subnet group name for the ElastiCache instance"
