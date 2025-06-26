@@ -1,6 +1,6 @@
 # Define composite variables for resources
 module "label" {
-  source     = "git::https://github.com/betterworks/terraform-null-label.git?ref=tags/0.13.0"
+  source     = "git::https://github.com/betterworks/terraform-null-label.git?ref=tags/0.14.0"
   enabled    = var.enabled
   namespace  = var.namespace
   name       = var.name
@@ -63,10 +63,9 @@ resource "aws_elasticache_parameter_group" "default" {
     }
   }
 
-  # Temporarily remove this block
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 
@@ -89,6 +88,7 @@ resource "aws_elasticache_replication_group" "default" {
   engine_version              = var.engine_version
   at_rest_encryption_enabled  = var.at_rest_encryption_enabled
   transit_encryption_enabled  = var.transit_encryption_enabled
+  multi_az_enabled            = var.multi_az_enabled
 
   tags = module.label.tags
 
@@ -96,7 +96,7 @@ resource "aws_elasticache_replication_group" "default" {
   depends_on = [aws_elasticache_parameter_group.default]
 
   lifecycle {
-    ignore_changes = [preferred_cache_cluster_azs, availability_zones]
+    ignore_changes = [preferred_cache_cluster_azs]
   }
 }
 
@@ -105,7 +105,7 @@ resource "aws_elasticache_replication_group" "default" {
 # CloudWatch Resources
 #
 resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
-  count               = var.enabled == "true" ? 1 : 0
+  count               = var.enabled && var.enable_metric_alarms ? 1 : 0
   alarm_name          = "${module.label.id}-cpu-utilization"
   alarm_description   = "Redis cluster CPU utilization"
   comparison_operator = "GreaterThanThreshold"
@@ -126,7 +126,7 @@ resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "cache_memory" {
-  count               = var.enabled == "true" ? 1 : 0
+  count               = var.enabled && var.enable_metric_alarms ? 1 : 0
   alarm_name          = "${module.label.id}-freeable-memory"
   alarm_description   = "Redis cluster freeable memory"
   comparison_operator = "GreaterThanThreshold"

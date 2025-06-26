@@ -34,6 +34,12 @@ variable "subnets" {
   default     = []
 }
 
+variable multi_az_enabled {
+  type        = bool
+  description = "Enables multi-az cluster"
+  default     = false
+}
+
 variable "elasticache_subnet_group_name" {
   type        = string
   description = "Subnet group name for the ElastiCache instance"
@@ -89,6 +95,11 @@ variable "transit_encryption_enabled" {
 variable "notification_topic_arn" {
   default     = ""
   description = "Notification topic arn"
+}
+
+variable "enable_metric_alarms" {
+  default     = false
+  description = "If true will create metric alarms"
 }
 
 variable "alarm_cpu_threshold_percent" {
