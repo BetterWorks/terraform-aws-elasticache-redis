@@ -77,6 +77,12 @@ variable "parameter" {
   description = "A list of Redis parameters to apply. Note that parameters may differ from one Redis family to another"
 }
 
+variable "engine" {
+  type        = string
+  default     = "redis"
+  description = "Cache engine: redis or valkey"
+}
+
 variable "engine_version" {
   default     = "4.0.10"
   description = "Redis engine version"
