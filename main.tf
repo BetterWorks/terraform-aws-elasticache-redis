@@ -85,6 +85,7 @@ resource "aws_elasticache_replication_group" "default" {
   security_group_ids          = [aws_security_group.default[0].id]
   maintenance_window          = var.maintenance_window
   notification_topic_arn      = var.notification_topic_arn
+  engine                      = var.engine
   engine_version              = var.engine_version
   at_rest_encryption_enabled  = var.at_rest_encryption_enabled
   transit_encryption_enabled  = var.transit_encryption_enabled

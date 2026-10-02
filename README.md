@@ -119,6 +119,7 @@ Available targets:
 | delimiter | Delimiter between `name`, `namespace`, `stage` and `attributes` | string | `-` | no |
 | elasticache_subnet_group_name | Subnet group name for the ElastiCache instance | string | `` | no |
 | enabled | Set to false to prevent the module from creating any resources | string | `true` | no |
+| engine | Cache engine: redis or valkey | string | `redis` | no |
 | engine_version | Redis engine version | string | `4.0.10` | no |
 | family | Redis family | string | `redis4.0` | no |
 | instance_type | Elastic cache instance type | string | `cache.t2.micro` | no |
